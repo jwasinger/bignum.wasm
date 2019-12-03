@@ -127,6 +127,50 @@ export function u256toa10(value: u256): string {
   return result;
 }
 
+export function atou256(str: string, radix: i32 = 0): u256 {
+  // if (!radix) radix = 10; TODO support more radixes
+  radix = 10;
+
+  if (radix < 2 || radix > 36) {
+    throw new Error("Invalid radix");
+  }
+
+  var first = str.charCodeAt(0);
+  if (str.length == 1 && first == CharCode._0) {
+    return u256.Zero;
+  }
+
+  var isNeg = first == CharCode.MINUS;
+  var index = <i32>(isNeg || first == CharCode.PLUS);
+  var table = RadixCharsTable;
+
+  if (isNeg) {
+    throw new Error("can't be negative");
+  }
+
+  var result = u256.Zero;
+
+  //if (ASC_SHRINK_LEVEL >= 1) {
+    do {
+      let radix128 = u128.fromU64(radix);
+      let n: u32 = str.charCodeAt(index) - CharCode._0;
+      if (n > <u32>(CharCode.z - CharCode._0)) break; // TODO: throw error here ?
+
+      let num = table[n];
+      if (num >= <u8>radix) break;
+
+      result *= radix256;
+      result += u256.fromU64(num);
+    } while (++index < str.length);
+
+  return result;
+/*
+  } else {
+    throw new Error("what the fuck is this");
+  }
+  */
+}
+
 export function atou128(str: string, radix: i32 = 0): u128 {
   if (!radix) radix = 10;
   if (radix < 2 || radix > 36) {

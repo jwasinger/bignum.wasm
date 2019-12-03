@@ -1,6 +1,6 @@
 import { i128 } from './i128';
 import { u128 } from './u128';
-import { u256toa10 }  from "../utils";
+import { atou256, u256toa10 }  from "../utils";
 
 @lazy const HEX_CHARS = '0123456789abcdef';
 
@@ -143,7 +143,10 @@ export class u256 {
   }
 
   // TODO
-  // static fromString(str: string): u256
+  @inline
+  static fromString(str: string): u256 {
+    return atou256(str, 10);
+  }
 
   constructor(
     public lo1: u64 = 0,
